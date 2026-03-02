@@ -1,6 +1,10 @@
 # SGDK Mega Drive Starter
 
-Small SGDK starter project with a hello-screen ROM for Sega Mega Drive / Genesis.
+Small SGDK starter project for Sega Mega Drive / Genesis with:
+
+- D-pad controlled sprite
+- Tile background with waterfall
+- Custom `rescomp` extension (`PALANIM`) driving palette animation
 
 ## Requirements
 
@@ -29,6 +33,33 @@ Small SGDK starter project with a hello-screen ROM for Sega Mega Drive / Genesis
 4. `.tools/sgdk` in this project
 
 No Docker is used.
+
+## Custom ResComp Extension
+
+The project includes a template extension in `rescomp_ext/` and auto-builds it on `make`:
+
+- extension source: `rescomp_ext/src/dev/retro/template/*.java`
+- generated extension jar: `res/rescomp_ext.jar`
+- extension resource usage: `res/resources.res`
+- animation data file: `res/palanim/waterfall.panim`
+
+`scripts/sgdk-make.sh` calls `scripts/build-rescomp-ext.sh` before invoking SGDK makefile.
+
+### PALANIM Syntax
+
+In `.res` file:
+
+`PALANIM name file palette firstColor colorCount [frameDelay]`
+
+Data file format (`.panim`):
+
+- One frame per line
+- Exactly `colorCount` hexadecimal Genesis colors (`0x0BGR` or `0BGR`) per line
+- `#` comments supported
+
+Example:
+
+`0200 0400 0640 08A0`
 
 ## VS Code Run Setup
 

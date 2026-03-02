@@ -47,6 +47,11 @@ EOF
     extra_flags="${extra_flags} -std=gnu11"
   fi
 
+  # Build project-local rescomp extension (res/rescomp_ext.jar) when extension sources are present.
+  if [[ -d "${PROJECT_ROOT}/rescomp_ext/src" ]]; then
+    "${PROJECT_ROOT}/scripts/build-rescomp-ext.sh" "${gdk_path}"
+  fi
+
   echo "Using local SGDK at ${gdk_path}"
   exec env PATH="$(IFS=:; echo "${extra_path[*]}"):${PATH}" GDK="${gdk_path}" EXTRA_FLAGS="${extra_flags}" make -f "${gdk_path}/makefile.gen" "$@"
 fi

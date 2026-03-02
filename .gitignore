@@ -1,8 +1,10 @@
 .DS_Store
+.cache/rescomp_ext/
 out/
 src/boot/
 .sgdk-path
 .megadrive-emulator.local
+res/rescomp_ext.jar
 .tools/
 *.d
 *.h

@@ -1,0 +1,6 @@
+# 4 colors per frame (Genesis 0x0BGR format, 12-bit)
+# The palette entries [8..11] in PAL0 are cycled to animate waterfall tiles.
+0200 0400 0640 08A0
+0400 0640 08A0 0200
+0640 08A0 0200 0400
+08A0 0200 0400 0640
