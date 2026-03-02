@@ -1,0 +1,28 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build ROM",
+      "type": "shell",
+      "command": "make",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run ROM",
+      "type": "shell",
+      "command": "./scripts/run-rom.sh",
+      "dependsOn": "Build ROM",
+      "problemMatcher": []
+    },
+    {
+      "label": "Test ROM",
+      "type": "shell",
+      "command": "make test",
+      "problemMatcher": []
+    }
+  ]
+}

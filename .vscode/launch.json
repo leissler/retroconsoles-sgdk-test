@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Mega Drive ROM",
+      "type": "node-terminal",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "command": "./scripts/run-rom.sh",
+      "preLaunchTask": "Build ROM"
+    }
+  ]
+}

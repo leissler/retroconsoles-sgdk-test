@@ -1,0 +1,8 @@
+# Emulator command used by scripts/run-rom.sh
+# Lines starting with # are ignored.
+#
+# Option 1: command without placeholder (rom path is appended automatically)
+# /Applications/blastem-osx-0.6.2/blastem
+#
+# Option 2: command with explicit {rom} placeholder
+# open -a OpenEmu {rom}
