@@ -9,7 +9,7 @@ Small SGDK starter project for Sega Mega Drive / Genesis with:
 ## Requirements
 
 - Java
-- Git (for automatic SGDK download when missing)
+- Git (optional, only if you want git-based SGDK bootstrap; ZIP fallback works without Git)
 
 Platform notes:
 

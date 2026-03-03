@@ -33,18 +33,60 @@ function Ensure-SgdkDownloaded([string] $targetPath, [string] $repo, [string] $t
     }
 
     $gitCmd = Get-Command git -ErrorAction SilentlyContinue
-    if (-not $gitCmd) {
-        Write-Error "Git is required for automatic SGDK download but was not found in PATH."
-    }
 
     if (Test-Path $targetPath) {
         Remove-Item -Recurse -Force $targetPath
     }
 
     New-Item -ItemType Directory -Force -Path (Split-Path -Parent $targetPath) | Out-Null
-    Write-Host "Downloading SGDK $tag into $targetPath"
-    & $gitCmd.Path clone --depth 1 --branch $tag $repo $targetPath
-    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+    if ($gitCmd) {
+        Write-Host "Downloading SGDK $tag into $targetPath (git clone)"
+        & $gitCmd.Path clone --depth 1 --branch $tag $repo $targetPath
+        if ($LASTEXITCODE -eq 0) {
+            return (Test-SgdkRoot $targetPath)
+        }
+
+        Write-Warning "git clone failed, falling back to ZIP download."
+    } else {
+        Write-Host "Git not found. Falling back to ZIP download."
+    }
+
+    $repoBase = $repo
+    if ($repoBase.EndsWith(".git")) {
+        $repoBase = $repoBase.Substring(0, $repoBase.Length - 4)
+    }
+    $zipUrl = "$repoBase/archive/refs/tags/$tag.zip"
+    $tmpZip = Join-Path $env:TEMP ("sgdk-" + [Guid]::NewGuid().ToString() + ".zip")
+    $tmpExtract = Join-Path $env:TEMP ("sgdk-" + [Guid]::NewGuid().ToString())
+
+    try {
+        Write-Host "Downloading SGDK ZIP: $zipUrl"
+        Invoke-WebRequest -Uri $zipUrl -OutFile $tmpZip -UseBasicParsing
+
+        New-Item -ItemType Directory -Force -Path $tmpExtract | Out-Null
+        Expand-Archive -Path $tmpZip -DestinationPath $tmpExtract -Force
+
+        $candidateRoots = Get-ChildItem -Path $tmpExtract -Directory -Recurse -ErrorAction SilentlyContinue
+        $sourceRoot = $null
+
+        foreach ($dir in $candidateRoots) {
+            if (Test-Path (Join-Path $dir.FullName "makefile.gen")) {
+                $sourceRoot = $dir.FullName
+                break
+            }
+        }
+
+        if (-not $sourceRoot) {
+            Write-Error "Could not locate SGDK root after ZIP extraction."
+        }
+
+        Move-Item -Path $sourceRoot -Destination $targetPath -Force
+    }
+    finally {
+        if (Test-Path $tmpZip) { Remove-Item -Force $tmpZip -ErrorAction SilentlyContinue }
+        if (Test-Path $tmpExtract) { Remove-Item -Recurse -Force $tmpExtract -ErrorAction SilentlyContinue }
+    }
 
     return (Test-SgdkRoot $targetPath)
 }
