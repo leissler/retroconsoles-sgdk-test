@@ -8,3 +8,4 @@ res/rescomp_ext.jar
 res/*.h
 .tools/
 *.d
+compile_commands.json
