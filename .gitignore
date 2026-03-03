@@ -5,6 +5,6 @@ src/boot/
 .sgdk-path
 .megadrive-emulator.local
 res/rescomp_ext.jar
+res/*.h
 .tools/
 *.d
-*.h
