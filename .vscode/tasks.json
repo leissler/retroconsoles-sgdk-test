@@ -6,7 +6,7 @@
       "type": "shell",
       "command": "echo \"Use make setup on macOS/Linux\"",
       "windows": {
-        "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\sgdk.ps1 setup"
+        "command": ".\\sgdk.cmd setup"
       },
       "problemMatcher": []
     },
@@ -15,7 +15,7 @@
       "type": "shell",
       "command": "./scripts/sgdk-make.sh",
       "windows": {
-        "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\sgdk.ps1 build"
+        "command": ".\\sgdk.cmd build"
       },
       "group": {
         "kind": "build",
@@ -28,7 +28,7 @@
       "type": "shell",
       "command": "./scripts/run-rom.sh",
       "windows": {
-        "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\sgdk.ps1 run"
+        "command": ".\\sgdk.cmd run"
       },
       "dependsOn": "Build ROM",
       "problemMatcher": []
@@ -38,7 +38,7 @@
       "type": "shell",
       "command": "make test",
       "windows": {
-        "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\sgdk.ps1 test"
+        "command": ".\\sgdk.cmd test"
       },
       "problemMatcher": []
     }

@@ -24,6 +24,7 @@ Windows support is included via PowerShell scripts:
 - `scripts/run-rom.ps1`
 - `scripts/test-rom.ps1`
 - `sgdk.ps1` (short command wrapper)
+- `sgdk.cmd` (policy-safe wrapper for PowerShell-restricted systems)
 
 ## Commands
 
@@ -36,26 +37,26 @@ Windows support is included via PowerShell scripts:
 
 Windows PowerShell equivalents:
 
-- `.\sgdk.ps1 setup`
-- `.\sgdk.ps1 build`
-- `.\sgdk.ps1 debug`
-- `.\sgdk.ps1 clean`
-- `.\sgdk.ps1 test`
-- `.\sgdk.ps1 run`
+- `.\sgdk.cmd setup`
+- `.\sgdk.cmd build`
+- `.\sgdk.cmd debug`
+- `.\sgdk.cmd clean`
+- `.\sgdk.cmd test`
+- `.\sgdk.cmd run`
 
 ## Windows Quick Start (After Clone)
 
 1. Setup/build (auto-downloads SGDK + local JDK into `.tools/` if missing):
-   `.\sgdk.ps1 setup`
+   `.\sgdk.cmd setup`
    or directly:
-   `.\sgdk.ps1 build`
+   `.\sgdk.cmd build`
 2. Test:
-   `.\sgdk.ps1 test`
+   `.\sgdk.cmd test`
 3. Configure emulator once (optional but recommended):
    Create `.megadrive-emulator.local` and add one line like:
    `C:\Emulators\BlastEm\blastem.exe {rom}`
 4. Run:
-   `.\sgdk.ps1 run`
+   `.\sgdk.cmd run`
 
 VS Code alternative:
 
