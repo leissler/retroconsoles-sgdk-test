@@ -9,6 +9,19 @@ $extSrcDir = Join-Path $projectRoot "rescomp_ext/src"
 $extBuildDir = Join-Path $projectRoot ".cache/rescomp_ext"
 $extClassesDir = Join-Path $extBuildDir "classes"
 $extJarOut = Join-Path $projectRoot "res/rescomp_ext.jar"
+$javaSetupScript = Join-Path $projectRoot "scripts/ensure-local-java.ps1"
+
+if (-not (Test-Path $javaSetupScript)) {
+    Write-Error "Missing Java bootstrap script: $javaSetupScript"
+}
+
+$javaHome = (& $javaSetupScript).Trim()
+if ([string]::IsNullOrWhiteSpace($javaHome) -or -not (Test-Path (Join-Path $javaHome "bin\java.exe"))) {
+    Write-Error "Local Java bootstrap failed."
+}
+
+$env:JAVA_HOME = $javaHome
+$env:PATH = (Join-Path $javaHome "bin") + ";" + $env:PATH
 
 if (-not (Test-Path $extSrcDir)) {
     exit 0
@@ -39,15 +52,10 @@ if ([string]::IsNullOrWhiteSpace($GdkPath) -or -not (Test-Path $rescompJar)) {
 $javacCmd = Get-Command javac -ErrorAction SilentlyContinue
 $jarCmd = Get-Command jar -ErrorAction SilentlyContinue
 if (-not $javacCmd -or -not $jarCmd) {
-    if (Test-Path $extJarOut) {
-        Write-Warning "javac/jar not found. Using existing extension jar: $extJarOut"
-        exit 0
-    }
-
     Write-Error @"
 Cannot build rescomp extension: javac/jar command not found.
-Install a JDK (not only a JRE), or provide prebuilt jar at:
-  $extJarOut
+Local Java bootstrap was expected to provide javac/jar at:
+  $javaHome\bin
 "@
 }
 

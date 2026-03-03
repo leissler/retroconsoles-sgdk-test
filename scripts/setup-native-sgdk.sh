@@ -5,16 +5,15 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SGDK_DIR="${SGDK_DIR:-${PROJECT_ROOT}/.tools/sgdk}"
 SGDK_TAG="${SGDK_TAG:-v2.11}"
 SGDK_REPO="${SGDK_REPO:-https://github.com/Stephane-D/SGDK}"
+JAVA_HOME_DIR="$("${PROJECT_ROOT}/scripts/ensure-local-java.sh")"
 
 if ! command -v brew >/dev/null 2>&1; then
   echo "Homebrew is required to install native m68k-elf tools on macOS." >&2
   exit 1
 fi
 
-if ! command -v java >/dev/null 2>&1; then
-  echo "Java is required by SGDK tools. Install Java and run setup again." >&2
-  exit 1
-fi
+export JAVA_HOME="${JAVA_HOME_DIR}"
+export PATH="${JAVA_HOME_DIR}/bin:${PATH}"
 
 missing_formulae=()
 for formula in m68k-elf-binutils m68k-elf-gcc; do

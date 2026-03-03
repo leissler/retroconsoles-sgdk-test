@@ -4,6 +4,7 @@ set -euo pipefail
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OS_NAME="$(uname -s 2>/dev/null || true)"
 IS_WINDOWS=0
+JAVA_HOME_DIR="$("${PROJECT_ROOT}/scripts/ensure-local-java.sh")"
 
 case "${OS_NAME}" in
   MINGW*|MSYS*|CYGWIN*) IS_WINDOWS=1 ;;
@@ -66,7 +67,7 @@ EOF
     exit 1
   fi
 
-  extra_path=("${gdk_path}/bin")
+  extra_path=("${JAVA_HOME_DIR}/bin" "${gdk_path}/bin")
   if [[ -x "${gdk_path}/tools/convsym/build/convsym" ]]; then
     extra_path+=("${gdk_path}/tools/convsym/build")
   fi
@@ -83,5 +84,5 @@ EOF
   fi
 
   echo "Using local SGDK at ${gdk_path}"
-  exec env PATH="$(IFS=:; echo "${extra_path[*]}"):${PATH}" GDK="${gdk_path}" EXTRA_FLAGS="${extra_flags}" make -f "${gdk_path}/makefile.gen" "$@"
+  exec env PATH="$(IFS=:; echo "${extra_path[*]}"):${PATH}" JAVA_HOME="${JAVA_HOME_DIR}" GDK="${gdk_path}" EXTRA_FLAGS="${extra_flags}" make -f "${gdk_path}/makefile.gen" "$@"
 fi

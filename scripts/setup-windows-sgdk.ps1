@@ -10,6 +10,7 @@ $ErrorActionPreference = "Stop"
 
 $projectRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $sgdkFile = Join-Path $projectRoot ".sgdk-path"
+$javaSetupScript = Join-Path $projectRoot "scripts/ensure-local-java.ps1"
 
 function Test-SgdkRoot([string] $path) {
     if ([string]::IsNullOrWhiteSpace($path)) { return $false }
@@ -147,7 +148,14 @@ if ($PersistUserEnv) {
 
 $makeExe = Join-Path $SgdkPath "bin/make.exe"
 $gccExe = Join-Path $SgdkPath "bin/gcc.exe"
-$javaOk = [bool](Get-Command java -ErrorAction SilentlyContinue)
+$javaHome = ""
+
+if (Test-Path $javaSetupScript) {
+    $javaHome = (& $javaSetupScript).Trim()
+    if (-not [string]::IsNullOrWhiteSpace($javaHome)) {
+        Write-Host "Using local Java at $javaHome"
+    }
+}
 
 if (-not (Test-Path $makeExe)) {
     Write-Warning "SGDK make.exe not found at $makeExe (expected for standard Windows SGDK package)."
@@ -155,10 +163,6 @@ if (-not (Test-Path $makeExe)) {
 if (-not (Test-Path $gccExe)) {
     Write-Warning "SGDK gcc.exe not found at $gccExe (expected for standard Windows SGDK package)."
 }
-if (-not $javaOk) {
-    Write-Warning "Java command not found on PATH. Install Java (JRE/JDK) to build resources."
-}
-
 Write-Host ""
 Write-Host "Next steps:"
 Write-Host "1) Build: powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\sgdk-make.ps1"

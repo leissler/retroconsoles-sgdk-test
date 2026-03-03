@@ -6,6 +6,18 @@ param(
 $ErrorActionPreference = "Stop"
 
 $projectRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
+$javaSetupScript = Join-Path $projectRoot "scripts/ensure-local-java.ps1"
+if (-not (Test-Path $javaSetupScript)) {
+    Write-Error "Missing Java bootstrap script: $javaSetupScript"
+}
+
+$javaHome = (& $javaSetupScript).Trim()
+if ([string]::IsNullOrWhiteSpace($javaHome) -or -not (Test-Path (Join-Path $javaHome "bin\java.exe"))) {
+    Write-Error "Local Java bootstrap failed."
+}
+$javaExe = Join-Path $javaHome "bin\java.exe"
+$javaForMake = $javaExe -replace "\\", "/"
+
 $gdkPath = $env:SGDK
 if ([string]::IsNullOrWhiteSpace($gdkPath)) { $gdkPath = $env:GDK }
 
@@ -78,6 +90,7 @@ if (-not $makeExe) {
 }
 
 $extraPath = @()
+$extraPath += (Join-Path $javaHome "bin")
 $extraPath += (Join-Path $gdkPath "bin")
 
 $convsymCandidates = @(
@@ -105,18 +118,21 @@ if ($extraFlags -notmatch "-std=") {
 $oldPath = $env:PATH
 $oldGdk = $env:GDK
 $oldExtraFlags = $env:EXTRA_FLAGS
+$oldJavaHome = $env:JAVA_HOME
 
 try {
     $env:PATH = (($extraPath -join ";") + ";" + $env:PATH)
+    $env:JAVA_HOME = $javaHome
     $env:GDK = $gdkPath
     $env:EXTRA_FLAGS = $extraFlags
 
     Write-Host "Using local SGDK at $gdkPath"
-    & $makeExe -f $makefileGen @MakeArgs
+    & $makeExe -f $makefileGen "JAVA=$javaForMake" @MakeArgs
     exit $LASTEXITCODE
 }
 finally {
     $env:PATH = $oldPath
+    $env:JAVA_HOME = $oldJavaHome
     $env:GDK = $oldGdk
     $env:EXTRA_FLAGS = $oldExtraFlags
 }

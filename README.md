@@ -8,21 +8,16 @@ Small SGDK starter project for Sega Mega Drive / Genesis with:
 
 ## Requirements
 
-- Java
-- Git (optional, only if you want git-based SGDK bootstrap; ZIP fallback works without Git)
-
-Notes:
-
-- Java Runtime (JRE) is enough to build and run with the prebuilt `res/rescomp_ext.jar`.
-- Java Development Kit (JDK) is required only when you want to modify/rebuild `rescomp_ext` sources.
+- Internet connection on first build (downloads SGDK and local JDK into `.tools/`)
 
 Platform notes:
 
-- macOS/Linux (native GCC toolchain flow): CMake + native `m68k-elf` GCC toolchain
+- macOS/Linux (native GCC toolchain flow): Homebrew + CMake + native `m68k-elf` GCC toolchain
 - Windows: SGDK binaries are downloaded into `.tools/sgdk` automatically (or you can point to an existing SGDK install)
 
 Windows support is included via PowerShell scripts:
 
+- `scripts/ensure-local-java.ps1`
 - `scripts/setup-windows-sgdk.ps1`
 - `scripts/sgdk-make.ps1`
 - `scripts/build-rescomp-ext.ps1`
@@ -47,15 +42,14 @@ Windows PowerShell equivalents:
 
 ## Windows Quick Start (After Clone)
 
-1. Install Java (if not already installed) and ensure `java` works in PowerShell.
-2. Build (this auto-downloads SGDK into `.tools/sgdk` if missing):
+1. Build (this auto-downloads SGDK + local JDK into `.tools/` if missing):
    `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\sgdk-make.ps1`
-3. Test:
+2. Test:
    `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\test-rom.ps1`
-4. Configure emulator once (optional but recommended):
+3. Configure emulator once (optional but recommended):
    Create `.megadrive-emulator.local` and add one line like:
    `C:\Emulators\BlastEm\blastem.exe {rom}`
-5. Run:
+4. Run:
    `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run-rom.ps1`
 
 VS Code alternative:
@@ -76,6 +70,7 @@ No Docker is used.
 
 Automatic bootstrap:
 
+- `scripts/ensure-local-java.sh` / `scripts/ensure-local-java.ps1` download a local JDK into `.tools/java/current` (no system Java install required).
 - `scripts/sgdk-make.sh` (macOS) runs native bootstrap (`scripts/setup-native-sgdk.sh`) when SGDK is missing.
 - `scripts/sgdk-make.ps1` (Windows) runs `scripts/setup-windows-sgdk.ps1` and auto-downloads SGDK into `.tools/sgdk` when needed.
 
@@ -89,6 +84,7 @@ The project includes a template extension in `rescomp_ext/` and auto-builds it o
 - animation data file: `res/palanim/waterfall.panim`
 
 `scripts/sgdk-make.sh` calls `scripts/build-rescomp-ext.sh` before invoking SGDK makefile.
+Build scripts compile the extension jar using the local JDK from `.tools/java/current`.
 
 ### PALANIM Syntax
 

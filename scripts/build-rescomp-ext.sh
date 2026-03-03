@@ -6,6 +6,10 @@ EXT_SRC_DIR="${PROJECT_ROOT}/rescomp_ext/src"
 EXT_BUILD_DIR="${PROJECT_ROOT}/.cache/rescomp_ext"
 EXT_CLASSES_DIR="${EXT_BUILD_DIR}/classes"
 EXT_JAR_OUT="${PROJECT_ROOT}/res/rescomp_ext.jar"
+JAVA_HOME_DIR="$("${PROJECT_ROOT}/scripts/ensure-local-java.sh")"
+
+export JAVA_HOME="${JAVA_HOME_DIR}"
+export PATH="${JAVA_HOME_DIR}/bin:${PATH}"
 
 if [[ ! -d "${EXT_SRC_DIR}" ]]; then
   exit 0
@@ -25,13 +29,8 @@ if [[ -z "${gdk_path}" || ! -f "${gdk_path}/bin/rescomp.jar" ]]; then
 fi
 
 if ! command -v javac >/dev/null 2>&1 || ! command -v jar >/dev/null 2>&1; then
-  if [[ -f "${EXT_JAR_OUT}" ]]; then
-    echo "Warning: javac/jar not found. Using existing extension jar: ${EXT_JAR_OUT}" >&2
-    exit 0
-  fi
-
   echo "Cannot build rescomp extension: javac/jar command not found." >&2
-  echo "Install a JDK (not only JRE), or provide prebuilt jar at: ${EXT_JAR_OUT}" >&2
+  echo "Local Java bootstrap was expected to provide javac/jar at: ${JAVA_HOME_DIR}/bin" >&2
   exit 1
 fi
 
