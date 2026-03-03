@@ -36,7 +36,11 @@ function Invoke-OrPrint([string] $cmd) {
         return
     }
 
-    Invoke-Expression $cmd
+    $invocation = $cmd.Trim()
+    if (-not $invocation.StartsWith("&")) {
+        $invocation = "& $invocation"
+    }
+    Invoke-Expression $invocation
 }
 
 $configuredEmulator = $env:MEGADRIVE_EMULATOR
