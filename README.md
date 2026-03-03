@@ -8,11 +8,21 @@ Small SGDK starter project for Sega Mega Drive / Genesis with:
 
 ## Requirements
 
-- macOS with Homebrew
 - Java
-- CMake
-- Native `m68k-elf` GCC toolchain
-- SGDK source tree (project-local or external)
+- Git (for automatic SGDK download when missing)
+
+Platform notes:
+
+- macOS/Linux (native GCC toolchain flow): CMake + native `m68k-elf` GCC toolchain
+- Windows: SGDK binaries are downloaded into `.tools/sgdk` automatically (or you can point to an existing SGDK install)
+
+Windows support is included via PowerShell scripts:
+
+- `scripts/setup-windows-sgdk.ps1`
+- `scripts/sgdk-make.ps1`
+- `scripts/build-rescomp-ext.ps1`
+- `scripts/run-rom.ps1`
+- `scripts/test-rom.ps1`
 
 ## Commands
 
@@ -22,6 +32,31 @@ Small SGDK starter project for Sega Mega Drive / Genesis with:
 - `make clean`: Clean output
 - `make test`: Build and run a ROM smoke test
 - `make run`: Build and launch `out/rom.bin` in emulator
+
+Windows PowerShell equivalents:
+
+- `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup-windows-sgdk.ps1`
+- `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\sgdk-make.ps1`
+- `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run-rom.ps1`
+- `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\test-rom.ps1`
+
+## Windows Quick Start (After Clone)
+
+1. Install Java (if not already installed) and ensure `java` works in PowerShell.
+2. Build (this auto-downloads SGDK into `.tools/sgdk` if missing):
+   `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\sgdk-make.ps1`
+3. Test:
+   `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\test-rom.ps1`
+4. Configure emulator once (optional but recommended):
+   Create `.megadrive-emulator.local` and add one line like:
+   `C:\Emulators\BlastEm\blastem.exe {rom}`
+5. Run:
+   `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run-rom.ps1`
+
+VS Code alternative:
+
+- `Terminal -> Run Task -> Setup SGDK (Windows)`
+- then `Build ROM`, `Test ROM`, `Run ROM`
 
 ## Build Backend
 
@@ -33,6 +68,11 @@ Small SGDK starter project for Sega Mega Drive / Genesis with:
 4. `.tools/sgdk` in this project
 
 No Docker is used.
+
+Automatic bootstrap:
+
+- `scripts/sgdk-make.sh` (macOS) runs native bootstrap (`scripts/setup-native-sgdk.sh`) when SGDK is missing.
+- `scripts/sgdk-make.ps1` (Windows) runs `scripts/setup-windows-sgdk.ps1` and auto-downloads SGDK into `.tools/sgdk` when needed.
 
 ## Custom ResComp Extension
 
@@ -79,3 +119,11 @@ The launcher in `scripts/run-rom.sh` picks emulator in this order:
 7. `OpenEmu.app`
 
 Use `.megadrive-emulator.example` as template for local/shared emulator commands.
+
+On Windows, VS Code tasks automatically call `scripts/run-rom.ps1` and prefer:
+
+1. `MEGADRIVE_EMULATOR`
+2. `.megadrive-emulator.local`
+3. `.megadrive-emulator`
+4. `blastem` / `blastem.exe` on `PATH`
+5. common BlastEm install folders in `Program Files`

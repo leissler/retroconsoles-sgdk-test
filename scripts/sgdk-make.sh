@@ -2,6 +2,12 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+OS_NAME="$(uname -s 2>/dev/null || true)"
+IS_WINDOWS=0
+
+case "${OS_NAME}" in
+  MINGW*|MSYS*|CYGWIN*) IS_WINDOWS=1 ;;
+esac
 
 gdk_path="${SGDK:-${GDK:-}}"
 
@@ -11,6 +17,19 @@ fi
 
 if [[ -z "${gdk_path}" && -f "${PROJECT_ROOT}/.tools/sgdk/makefile.gen" ]]; then
   gdk_path="${PROJECT_ROOT}/.tools/sgdk"
+fi
+
+if [[ -z "${gdk_path}" ]]; then
+  if [[ "${OS_NAME}" == "Darwin" ]] && [[ -x "${PROJECT_ROOT}/scripts/setup-native-sgdk.sh" ]]; then
+    echo "No SGDK configured. Running native SGDK bootstrap..."
+    "${PROJECT_ROOT}/scripts/setup-native-sgdk.sh"
+
+    if [[ -f "${PROJECT_ROOT}/.sgdk-path" ]]; then
+      gdk_path="$(<"${PROJECT_ROOT}/.sgdk-path")"
+    elif [[ -f "${PROJECT_ROOT}/.tools/sgdk/makefile.gen" ]]; then
+      gdk_path="${PROJECT_ROOT}/.tools/sgdk"
+    fi
+  fi
 fi
 
 if [[ -z "${gdk_path}" ]]; then
@@ -24,11 +43,22 @@ fi
 
 if [[ -n "${gdk_path}" ]]; then
   if [[ ! -f "${gdk_path}/makefile.gen" ]]; then
-    echo "SGDK path is set but makefile.gen was not found at: ${gdk_path}" >&2
-    exit 1
+    if [[ "${OS_NAME}" == "Darwin" ]] && [[ -x "${PROJECT_ROOT}/scripts/setup-native-sgdk.sh" ]]; then
+      echo "Configured SGDK path is invalid. Running native SGDK bootstrap..."
+      "${PROJECT_ROOT}/scripts/setup-native-sgdk.sh"
+
+      if [[ -f "${PROJECT_ROOT}/.sgdk-path" ]]; then
+        gdk_path="$(<"${PROJECT_ROOT}/.sgdk-path")"
+      fi
+    fi
+
+    if [[ ! -f "${gdk_path}/makefile.gen" ]]; then
+      echo "SGDK path is set but makefile.gen was not found at: ${gdk_path}" >&2
+      exit 1
+    fi
   fi
 
-  if ! command -v m68k-elf-gcc >/dev/null 2>&1; then
+  if [[ "${IS_WINDOWS}" -ne 1 ]] && ! command -v m68k-elf-gcc >/dev/null 2>&1; then
     cat >&2 <<EOF
 Native toolchain not found: m68k-elf-gcc
 Run 'make setup' to install native build dependencies.

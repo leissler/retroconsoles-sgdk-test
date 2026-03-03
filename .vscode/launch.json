@@ -7,6 +7,9 @@
       "request": "launch",
       "cwd": "${workspaceFolder}",
       "command": "./scripts/run-rom.sh",
+      "windows": {
+        "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\run-rom.ps1"
+      },
       "preLaunchTask": "Build ROM"
     }
   ]
