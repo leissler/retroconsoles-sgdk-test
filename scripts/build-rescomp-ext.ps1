@@ -39,7 +39,16 @@ if ([string]::IsNullOrWhiteSpace($GdkPath) -or -not (Test-Path $rescompJar)) {
 $javacCmd = Get-Command javac -ErrorAction SilentlyContinue
 $jarCmd = Get-Command jar -ErrorAction SilentlyContinue
 if (-not $javacCmd -or -not $jarCmd) {
-    Write-Error "Cannot build rescomp extension: javac/jar command not found."
+    if (Test-Path $extJarOut) {
+        Write-Warning "javac/jar not found. Using existing extension jar: $extJarOut"
+        exit 0
+    }
+
+    Write-Error @"
+Cannot build rescomp extension: javac/jar command not found.
+Install a JDK (not only a JRE), or provide prebuilt jar at:
+  $extJarOut
+"@
 }
 
 $javaSources = Get-ChildItem -Path $extSrcDir -Recurse -Filter *.java | Sort-Object FullName
@@ -54,7 +63,13 @@ New-Item -ItemType Directory -Force -Path $extClassesDir | Out-Null
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $extJarOut) | Out-Null
 
 Write-Host "Building rescomp extension jar: $extJarOut"
-& $javacCmd.Path -cp $rescompJar -d $extClassesDir ($javaSources | ForEach-Object { $_.FullName })
+$javacHelp = (& $javacCmd.Path --help 2>&1 | Out-String)
+$javacArgs = @("-source", "8", "-target", "8")
+if ($javacHelp -match "--release") {
+    $javacArgs = @("--release", "8")
+}
+
+& $javacCmd.Path @javacArgs -cp $rescompJar -d $extClassesDir ($javaSources | ForEach-Object { $_.FullName })
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 & $jarCmd.Path --create --file $extJarOut -C $extClassesDir .

@@ -25,7 +25,13 @@ if [[ -z "${gdk_path}" || ! -f "${gdk_path}/bin/rescomp.jar" ]]; then
 fi
 
 if ! command -v javac >/dev/null 2>&1 || ! command -v jar >/dev/null 2>&1; then
+  if [[ -f "${EXT_JAR_OUT}" ]]; then
+    echo "Warning: javac/jar not found. Using existing extension jar: ${EXT_JAR_OUT}" >&2
+    exit 0
+  fi
+
   echo "Cannot build rescomp extension: javac/jar command not found." >&2
+  echo "Install a JDK (not only JRE), or provide prebuilt jar at: ${EXT_JAR_OUT}" >&2
   exit 1
 fi
 
@@ -43,5 +49,10 @@ rm -rf "${EXT_CLASSES_DIR}"
 mkdir -p "${EXT_CLASSES_DIR}"
 
 echo "Building rescomp extension jar: ${EXT_JAR_OUT}"
-javac -cp "${gdk_path}/bin/rescomp.jar" -d "${EXT_CLASSES_DIR}" "${java_sources[@]}"
+compile_flags=("-source" "8" "-target" "8")
+if javac --help 2>&1 | grep -q -- "--release"; then
+  compile_flags=("--release" "8")
+fi
+
+javac "${compile_flags[@]}" -cp "${gdk_path}/bin/rescomp.jar" -d "${EXT_CLASSES_DIR}" "${java_sources[@]}"
 jar --create --file "${EXT_JAR_OUT}" -C "${EXT_CLASSES_DIR}" .

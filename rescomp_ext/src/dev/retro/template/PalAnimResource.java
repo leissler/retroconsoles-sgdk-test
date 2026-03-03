@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -110,7 +110,7 @@ public class PalAnimResource extends Resource
 
     private short[] parseFrameColors(String file, int colorCount) throws IOException
     {
-        final List<String> lines = Files.readAllLines(Path.of(file), StandardCharsets.UTF_8);
+        final List<String> lines = Files.readAllLines(Paths.get(file), StandardCharsets.UTF_8);
         final List<Short> colors = new ArrayList<>();
 
         for (String line : lines)

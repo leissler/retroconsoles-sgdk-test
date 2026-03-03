@@ -11,6 +11,11 @@ Small SGDK starter project for Sega Mega Drive / Genesis with:
 - Java
 - Git (optional, only if you want git-based SGDK bootstrap; ZIP fallback works without Git)
 
+Notes:
+
+- Java Runtime (JRE) is enough to build and run with the prebuilt `res/rescomp_ext.jar`.
+- Java Development Kit (JDK) is required only when you want to modify/rebuild `rescomp_ext` sources.
+
 Platform notes:
 
 - macOS/Linux (native GCC toolchain flow): CMake + native `m68k-elf` GCC toolchain
