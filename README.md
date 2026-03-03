@@ -23,6 +23,7 @@ Windows support is included via PowerShell scripts:
 - `scripts/build-rescomp-ext.ps1`
 - `scripts/run-rom.ps1`
 - `scripts/test-rom.ps1`
+- `sgdk.ps1` (short command wrapper)
 
 ## Commands
 
@@ -35,22 +36,26 @@ Windows support is included via PowerShell scripts:
 
 Windows PowerShell equivalents:
 
-- `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup-windows-sgdk.ps1`
-- `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\sgdk-make.ps1`
-- `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run-rom.ps1`
-- `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\test-rom.ps1`
+- `.\sgdk.ps1 setup`
+- `.\sgdk.ps1 build`
+- `.\sgdk.ps1 debug`
+- `.\sgdk.ps1 clean`
+- `.\sgdk.ps1 test`
+- `.\sgdk.ps1 run`
 
 ## Windows Quick Start (After Clone)
 
-1. Build (this auto-downloads SGDK + local JDK into `.tools/` if missing):
-   `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\sgdk-make.ps1`
+1. Setup/build (auto-downloads SGDK + local JDK into `.tools/` if missing):
+   `.\sgdk.ps1 setup`
+   or directly:
+   `.\sgdk.ps1 build`
 2. Test:
-   `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\test-rom.ps1`
+   `.\sgdk.ps1 test`
 3. Configure emulator once (optional but recommended):
    Create `.megadrive-emulator.local` and add one line like:
    `C:\Emulators\BlastEm\blastem.exe {rom}`
 4. Run:
-   `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run-rom.ps1`
+   `.\sgdk.ps1 run`
 
 VS Code alternative:
 

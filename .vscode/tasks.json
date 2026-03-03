@@ -6,7 +6,7 @@
       "type": "shell",
       "command": "echo \"Use make setup on macOS/Linux\"",
       "windows": {
-        "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\setup-windows-sgdk.ps1"
+        "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\sgdk.ps1 setup"
       },
       "problemMatcher": []
     },
@@ -15,7 +15,7 @@
       "type": "shell",
       "command": "./scripts/sgdk-make.sh",
       "windows": {
-        "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\sgdk-make.ps1"
+        "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\sgdk.ps1 build"
       },
       "group": {
         "kind": "build",
@@ -28,7 +28,7 @@
       "type": "shell",
       "command": "./scripts/run-rom.sh",
       "windows": {
-        "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\run-rom.ps1"
+        "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\sgdk.ps1 run"
       },
       "dependsOn": "Build ROM",
       "problemMatcher": []
@@ -38,7 +38,7 @@
       "type": "shell",
       "command": "make test",
       "windows": {
-        "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\sgdk-make.ps1; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\test-rom.ps1"
+        "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\sgdk.ps1 test"
       },
       "problemMatcher": []
     }
