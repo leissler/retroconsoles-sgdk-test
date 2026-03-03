@@ -22,20 +22,34 @@ if (Test-JavaHome $javaHome) {
 $archRaw = $env:PROCESSOR_ARCHITECTURE
 if ([string]::IsNullOrWhiteSpace($archRaw)) { $archRaw = "AMD64" }
 
+$archCandidates = @("x64")
 switch -Regex ($archRaw.ToUpperInvariant()) {
-    "ARM64|AARCH64" { $arch = "aarch64" }
-    default { $arch = "x64" }
+    "ARM64|AARCH64" { $archCandidates = @("aarch64", "x64") }
 }
 
-$downloadUrl = "https://api.adoptium.net/v3/binary/latest/$JavaVersion/ga/windows/$arch/jdk/hotspot/normal/eclipse?project=jdk"
 $tmpZip = Join-Path $env:TEMP ("jdk-" + [Guid]::NewGuid().ToString() + ".zip")
 $tmpExtract = Join-Path $env:TEMP ("jdk-" + [Guid]::NewGuid().ToString())
+$selectedArch = $null
 
 try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-    Write-Host "Downloading local JDK $JavaVersion (windows/$arch)..."
-    Invoke-WebRequest -Uri $downloadUrl -OutFile $tmpZip -UseBasicParsing
+    foreach ($arch in $archCandidates) {
+        $downloadUrl = "https://api.adoptium.net/v3/binary/latest/$JavaVersion/ga/windows/$arch/jdk/hotspot/normal/eclipse?project=jdk"
+        try {
+            Write-Host "Downloading local JDK $JavaVersion (windows/$arch)..."
+            Invoke-WebRequest -Uri $downloadUrl -OutFile $tmpZip -UseBasicParsing
+            $selectedArch = $arch
+            break
+        }
+        catch {
+            Write-Warning "JDK download failed for windows/$arch, trying next option..."
+        }
+    }
+
+    if (-not $selectedArch -or -not (Test-Path $tmpZip)) {
+        Write-Error "Could not download a local JDK (tried: $($archCandidates -join ', '))."
+    }
 
     New-Item -ItemType Directory -Force -Path $tmpExtract | Out-Null
     Expand-Archive -Path $tmpZip -DestinationPath $tmpExtract -Force
